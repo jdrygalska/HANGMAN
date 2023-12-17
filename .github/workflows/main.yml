@@ -1,0 +1,35 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.100-preview.7
+
+      - name: Build
+        run: dotnet build -c Release
+
+      - name: Test
+        run: dotnet test
+
+      - name: Publish Artifact
+        run: dotnet publish -c Release -o publish
+        continue-on-error: true
+
+      - name: Archive Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MyApp-Artifact
+          path: ./publish
